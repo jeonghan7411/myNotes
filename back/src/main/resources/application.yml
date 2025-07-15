@@ -1,0 +1,46 @@
+# =====================================================
+# 📚 MyNotes API - 공통 설정
+# =====================================================
+
+spring:
+  application:
+    name: mynotes-api
+  
+  # 기본 활성 프로필 (개발환경)
+  profiles:
+    active: dev
+  
+  # JSON 응답 설정
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: NON_NULL
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: Asia/Seoul
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.mynotes.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+    cache-enabled: true
+
+# JWT 설정 (기본값)
+jwt:
+  secret: ${JWT_SECRET:myNotesSecretKeyForJWT2025VeryLongSecretKey123456789}
+  access-token-validity-in-seconds: 1800    # 30분
+  refresh-token-validity-in-seconds: 604800 # 7일
+
+# 서버 설정
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# 로깅 설정 (기본)
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" 
