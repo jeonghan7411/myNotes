@@ -24,7 +24,7 @@
 - Spring Security + JWT
 - MyBatis (SQL Mapper)
 - Redis (캐시)
-- MariaDB
+- Oracle Database
 
 ### 인프라
 - Docker & Docker Compose

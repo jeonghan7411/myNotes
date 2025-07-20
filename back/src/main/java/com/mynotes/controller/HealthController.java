@@ -45,7 +45,7 @@ public class HealthController {
         log.info("데이터베이스 헬스체크 API 호출됨");
         
         Map<String, Object> dbInfo = new HashMap<>();
-        dbInfo.put("database", "MariaDB");
+        dbInfo.put("database", "Oracle Database");
         dbInfo.put("status", "연결 예정"); // 실제 DB 연결 후 변경
         dbInfo.put("timestamp", LocalDateTime.now());
         

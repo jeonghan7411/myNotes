@@ -169,7 +169,18 @@ Response:
         },
         "likeCount": 5,
         "commentCount": 3,
+        "bookmarkCount": 12,
         "isLiked": false,
+        "isBookmarked": true,
+        "bookmarkInfo": {
+          "bookmarkId": 8,
+          "folder": {
+            "folderId": 5,
+            "name": "Hooks",
+            "fullPath": "프론트엔드/React/Hooks"
+          },
+          "visibility": "PRIVATE"
+        },
         "createdAt": "2024-01-15T10:30:00Z",
         "updatedAt": "2024-01-15T10:30:00Z"
       }
@@ -234,7 +245,18 @@ Response:
     },
     "likeCount": 5,
     "commentCount": 3,
+    "bookmarkCount": 12,
     "isLiked": false,
+    "isBookmarked": true,
+    "bookmarkInfo": {
+      "bookmarkId": 8,
+      "folder": {
+        "folderId": 5,
+        "name": "Hooks",
+        "fullPath": "프론트엔드/React/Hooks"
+      },
+      "visibility": "PRIVATE"
+    },
     "visibility": "PUBLIC",
     "createdAt": "2024-01-15T10:30:00Z",
     "updatedAt": "2024-01-15T10:30:00Z"
@@ -325,6 +347,427 @@ Response:
   "data": {
     "isLiked": true,
     "likeCount": 6
+  }
+}
+```
+
+## 담기/북마크 관련 API
+
+### 1. 게시글 담기/담기 취소
+```
+POST /api/posts/{postId}/bookmark
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+Request Body:
+{
+  "folderId": 5,                           // 필수, 담기할 폴더 ID
+  "notes": "나중에 꼭 다시 봐야할 내용",      // 선택사항, 개인 메모
+  "visibility": "PRIVATE"                  // 선택사항, PUBLIC/PRIVATE (기본: PRIVATE)
+}
+
+Response:
+{
+  "success": true,
+  "message": "담기했습니다.",
+  "data": {
+    "bookmarkId": 25,
+    "isBookmarked": true,
+    "bookmarkCount": 12,  // 해당 게시글의 총 담기 수
+    "folder": {
+      "folderId": 5,
+      "name": "React > Hooks",
+      "fullPath": "프론트엔드/React/Hooks"
+    },
+    "visibility": "PRIVATE"
+  }
+}
+```
+
+### 2. 내 담기 목록 조회
+```
+GET /api/bookmarks?page=0&size=10&folderId=5&visibility=PRIVATE
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "bookmarkId": 1,
+        "post": {
+          "postId": 5,
+          "title": "React Hook 완벽 가이드",
+          "summary": "React Hook의 모든 것을 담았습니다",
+          "author": {
+            "userId": 10,
+            "username": "reactmaster",
+            "nickname": "리액트마스터"
+          },
+          "category": {
+            "categoryId": 1,
+            "name": "프론트엔드",
+            "colorCode": "#3B82F6"
+          },
+          "likeCount": 25,
+          "commentCount": 8,
+          "createdAt": "2024-01-10T15:30:00Z"
+        },
+        "folder": {
+          "folderId": 5,
+          "name": "Hooks",
+          "fullPath": "프론트엔드/React/Hooks",
+          "colorCode": "#3B82F6",
+          "icon": "📚"
+        },
+        "notes": "나중에 꼭 다시 봐야할 내용",
+        "visibility": "PRIVATE",
+        "bookmarkedAt": "2024-01-15T09:20:00Z"
+      }
+    ],
+    "totalElements": 45,
+    "totalPages": 5,
+    "currentPage": 0
+  }
+}
+```
+
+### 3. 담기 폴더 트리 조회 (계층형)
+```
+GET /api/bookmark-folders/tree?includeCount=true&visibility=ALL
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "data": [
+    {
+      "folderId": 1,
+      "name": "프론트엔드",
+      "description": "프론트엔드 개발 관련 자료",
+      "colorCode": "#3B82F6",
+      "icon": "🎨",
+      "visibility": "PRIVATE",
+      "bookmarkCount": 35,
+      "sortOrder": 1,
+      "children": [
+        {
+          "folderId": 2,
+          "name": "React",
+          "description": "React 학습 자료",
+          "colorCode": "#61DAFB",
+          "icon": "⚛️",
+          "visibility": "PUBLIC",  // 이 폴더는 공개
+          "bookmarkCount": 18,
+          "sortOrder": 1,
+          "children": [
+            {
+              "folderId": 5,
+              "name": "Hooks",
+              "colorCode": "#61DAFB",
+              "icon": "🪝",
+              "visibility": "PRIVATE",
+              "bookmarkCount": 8,
+              "sortOrder": 1,
+              "children": []
+            }
+          ]
+        },
+        {
+          "folderId": 3,
+          "name": "Vue.js",
+          "colorCode": "#4FC08D",
+          "icon": "💚",
+          "visibility": "PRIVATE",
+          "bookmarkCount": 12,
+          "sortOrder": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "folderId": 4,
+      "name": "백엔드",
+      "description": "백엔드 개발 관련 자료",
+      "colorCode": "#10B981",
+      "icon": "⚙️",
+      "visibility": "PRIVATE",
+      "bookmarkCount": 25,
+      "sortOrder": 2,
+      "children": []
+    }
+  ]
+}
+```
+
+### 4. 폴더 생성
+```
+POST /api/bookmark-folders
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+Request Body:
+{
+  "name": "TypeScript",
+  "description": "TypeScript 학습 자료 모음",
+  "parentFolderId": 2,        // 선택사항, React 폴더 하위에 생성
+  "colorCode": "#3178C6",
+  "icon": "📘",
+  "visibility": "PRIVATE",    // PUBLIC/PRIVATE
+  "sortOrder": 3
+}
+
+Response:
+{
+  "success": true,
+  "message": "폴더가 생성되었습니다.",
+  "data": {
+    "folderId": 6,
+    "name": "TypeScript",
+    "fullPath": "프론트엔드/React/TypeScript",
+    "parentFolderId": 2,
+    "colorCode": "#3178C6",
+    "icon": "📘",
+    "visibility": "PRIVATE"
+  }
+}
+```
+
+### 5. 폴더 수정
+```
+PUT /api/bookmark-folders/{folderId}
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+Request Body:
+{
+  "name": "TypeScript 고급",
+  "description": "TypeScript 고급 학습 자료",
+  "colorCode": "#3178C6",
+  "icon": "📚",
+  "visibility": "PUBLIC",
+  "sortOrder": 1
+}
+
+Response:
+{
+  "success": true,
+  "message": "폴더가 수정되었습니다.",
+  "data": {
+    "folderId": 6,
+    "name": "TypeScript 고급",
+    "fullPath": "프론트엔드/React/TypeScript 고급"
+  }
+}
+```
+
+### 6. 폴더 이동 (부모 폴더 변경)
+```
+PUT /api/bookmark-folders/{folderId}/move
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+Request Body:
+{
+  "newParentFolderId": 4,  // 백엔드 폴더로 이동, null이면 최상위로
+  "sortOrder": 1
+}
+
+Response:
+{
+  "success": true,
+  "message": "폴더가 이동되었습니다.",
+  "data": {
+    "folderId": 6,
+    "oldPath": "프론트엔드/React/TypeScript",
+    "newPath": "백엔드/TypeScript"
+  }
+}
+```
+
+### 7. 폴더 삭제
+```
+DELETE /api/bookmark-folders/{folderId}?moveBookmarksTo=4
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "message": "폴더가 삭제되었습니다. 담기 항목들은 다른 폴더로 이동되었습니다.",
+  "data": {
+    "deletedFolderId": 6,
+    "movedBookmarksCount": 12,
+    "targetFolderId": 4
+  }
+}
+```
+
+### 8. 담기 메모 및 설정 수정
+```
+PUT /api/bookmarks/{bookmarkId}
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+Request Body:
+{
+  "folderId": 4,              // 다른 폴더로 이동
+  "notes": "수정된 메모 내용",
+  "visibility": "PUBLIC"      // 공개로 변경
+}
+
+Response:
+{
+  "success": true,
+  "message": "담기 정보가 수정되었습니다.",
+  "data": {
+    "bookmarkId": 1,
+    "folder": {
+      "folderId": 4,
+      "name": "백엔드",
+      "fullPath": "백엔드"
+    },
+    "notes": "수정된 메모 내용",
+    "visibility": "PUBLIC"
+  }
+}
+```
+
+### 9. 담기 삭제
+```
+DELETE /api/bookmarks/{bookmarkId}
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "message": "담기를 해제했습니다."
+}
+```
+
+### 10. 게시글의 담기 상태 확인
+```
+GET /api/posts/{postId}/bookmark-status
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "data": {
+    "isBookmarked": true,
+    "bookmarkId": 5,
+    "folder": {
+      "folderId": 2,
+      "name": "React",
+      "fullPath": "프론트엔드/React"
+    },
+    "visibility": "PRIVATE",
+    "bookmarkCount": 12  // 해당 게시글의 총 담기 수 (공개 담기만)
+  }
+}
+```
+
+## 공개 담기 탐색 API
+
+### 1. 공개 담기 컬렉션 탐색
+```
+GET /api/explore/public-bookmarks?page=0&size=10&sortBy=POPULAR
+Authorization: Bearer {accessToken}
+
+Query Parameters:
+- sortBy: POPULAR, RECENT, BOOKMARK_COUNT
+- categoryId: 카테고리 필터
+
+Response:
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "bookmarkId": 15,
+        "post": {
+          "postId": 8,
+          "title": "React 성능 최적화 완벽 가이드",
+          "summary": "React 앱 성능을 극적으로 향상시키는 방법들",
+          "author": {
+            "userId": 20,
+            "username": "reactpro",
+            "nickname": "리액트프로"
+          }
+        },
+        "bookmarkOwner": {
+          "userId": 15,
+          "username": "frontend_guru",
+          "nickname": "프론트엔드구루",
+          "followerCount": 1200
+        },
+        "folder": {
+          "folderId": 12,
+          "name": "성능 최적화",
+          "fullPath": "프론트엔드/React/성능 최적화",
+          "colorCode": "#FF6B6B",
+          "icon": "⚡"
+        },
+        "curatorNote": "실제 프로젝트에서 활용해본 검증된 최적화 기법들",
+        "bookmarkCount": 89,  // 이 게시글을 담기한 총 사용자 수
+        "bookmarkedAt": "2024-01-12T14:30:00Z"
+      }
+    ],
+    "totalElements": 256,
+    "totalPages": 26,
+    "currentPage": 0
+  }
+}
+```
+
+### 2. 사용자의 공개 담기 컬렉션 조회
+```
+GET /api/users/{userId}/public-bookmarks?page=0&size=10&folderId=12
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "data": {
+    "user": {
+      "userId": 15,
+      "username": "frontend_guru",
+      "nickname": "프론트엔드구루",
+      "followerCount": 1200,
+      "totalPublicBookmarks": 145
+    },
+    "folder": {
+      "folderId": 12,
+      "name": "성능 최적화",
+      "fullPath": "프론트엔드/React/성능 최적화",
+      "description": "실무에서 검증된 React 성능 최적화 자료집",
+      "colorCode": "#FF6B6B",
+      "icon": "⚡"
+    },
+    "bookmarks": [
+      // 담기 목록...
+    ]
+  }
+}
+```
+
+### 3. 공개 폴더 트리 조회
+```
+GET /api/users/{userId}/public-folders/tree
+Authorization: Bearer {accessToken}
+
+Response:
+{
+  "success": true,
+  "data": {
+    "user": {
+      "userId": 15,
+      "username": "frontend_guru",
+      "nickname": "프론트엔드구루"
+    },
+    "folders": [
+      // 공개 설정된 폴더들의 계층 구조...
+    ]
   }
 }
 ```

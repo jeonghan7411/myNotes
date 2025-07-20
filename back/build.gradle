@@ -31,8 +31,11 @@ dependencies {
     // MyBatis
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
     
-    // Database
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    // Database - Oracle
+    implementation 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'  // Oracle JDBC 드라이버
+    implementation 'com.oracle.database.security:oraclepki:23.3.0.23.09'  // Oracle PKI
+    implementation 'com.oracle.database.security:osdt_cert:23.3.0.23.09'  // Oracle 보안 인증서
+    implementation 'com.oracle.database.security:osdt_core:23.3.0.23.09'  // Oracle 보안 코어
     implementation 'com.zaxxer:HikariCP' // Connection Pool
     
     // JWT
@@ -58,6 +61,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+    testImplementation 'com.h2database:h2' // 테스트용 H2 DB
 }
 
 tasks.named('test') {

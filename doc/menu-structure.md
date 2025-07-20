@@ -18,10 +18,26 @@
   - 카테고리별 분류
   - 검색 기능
   
+- **내 담기** (`/my-bookmarks`)
+  - 담기한 게시글 목록 조회 (계층형 폴더별)
+  - 공개/비공개 담기 관리
+  - 개인 메모 추가/수정
+  - 담기 해제 기능
+  
+- **폴더 관리** (`/bookmark-folders`)
+  - 계층형 폴더 생성/수정/삭제
+  - 폴더 이동 및 정렬
+  - 공개/비공개 설정
+  - 폴더 꾸미기 (색상, 아이콘)
+  
 - **탐색** (`/explore`)
   - 인기 게시글
   - 추천 사용자
   - 해시태그별 게시글
+  - **공개 담기 컬렉션** (`/explore/public-bookmarks`)
+    - 다른 사용자들의 큐레이션 탐색
+    - 인기 컬렉션, 최신 컬렉션
+    - 주제별 필터링
 
 ### 3. 프로필 관련
 - **내 프로필** (`/profile`)
@@ -33,6 +49,9 @@
   - 사용자 정보 조회
   - 팔로우/언팔로우
   - 해당 사용자의 공개 게시글
+  - **공개 담기 컬렉션** (`/user/:userId/public-bookmarks`)
+    - 사용자의 공개 폴더 및 큐레이션 조회
+    - 폴더별 담기 목록 탐색
 
 ### 4. 설정
 - **계정 설정** (`/settings`)
@@ -83,4 +102,11 @@
 - `CommentSection`: 댓글 영역
 - `UserProfile`: 사용자 프로필 정보
 - `FollowButton`: 팔로우 버튼
+- `BookmarkButton`: 담기 버튼 (폴더 선택 드롭다운 포함)
+- `BookmarkList`: 담기 목록 (계층형 폴더 뷰)
+- `BookmarkFolderTree`: 계층형 폴더 트리 컴포넌트
+- `BookmarkFolderManager`: 폴더 생성/수정/삭제 관리
+- `FolderSelector`: 폴더 선택 드롭다운
+- `PublicBookmarkExplorer`: 공개 담기 탐색
+- `BookmarkCurationCard`: 큐레이션 카드 (공개 담기용)
 - `AdminTable`: 관리자 테이블 
